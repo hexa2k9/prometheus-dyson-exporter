@@ -1,12 +1,12 @@
-FROM python:3.10-slim-buster
+FROM rockylinux:8-minimal
 
 # Create config directory
-RUN mkdir -p /config
+RUN microdnf module enable -y python39:3.9 && microdnf install -y python39 && mkdir -p /config && pip3.9 install --no-cache-dir virtualenv
 
 # Install package
 WORKDIR /app
 COPY . .
-RUN pip3 install .
+RUN virtualenv .venv && .venv/bin/pip --no-cache-dir install .
 
 # Set Environment Variables
 ENV EXPORTER_PORT="9672"
@@ -17,4 +17,4 @@ ENV DYSON_CREDENTIAL=""
 ENV DYSON_DEVICE_TYPE=""
 ENV DYSON_IP=""
 
-ENTRYPOINT ["dyson-exporter"]
+ENTRYPOINT ["/app/.venv/bin/python", "dyson-exporter"]
