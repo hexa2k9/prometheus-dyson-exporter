@@ -1,12 +1,18 @@
 FROM rockylinux:8-minimal
 
 # Create config directory
-RUN microdnf module enable -y python39:3.9 && microdnf install -y python39 && mkdir -p /config && pip3.9 install --no-cache-dir virtualenv
+RUN -set -eux \
+	&& microdnf module enable -y python39:3.9 \
+	&& microdnf install -y python39 \
+	&& pip3.9 install --no-cache-dir virtualenv \
+	&& mkdir -p /config 
 
 # Install package
 WORKDIR /app
 COPY . .
-RUN virtualenv .venv && .venv/bin/pip --no-cache-dir install .
+RUN set -eux \
+	&& virtualenv .venv \
+	&& && .venv/bin/pip --no-cache-dir install .
 
 # Set Environment Variables
 ENV EXPORTER_PORT="9672"
