@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . .
 RUN set -eux \
 	&& virtualenv .venv \
-	&& && .venv/bin/pip --no-cache-dir install .
+	&& .venv/bin/pip --no-cache-dir install .
 
 # Set Environment Variables
 ENV EXPORTER_PORT="9672"
