@@ -1,7 +1,7 @@
 FROM rockylinux:8-minimal
 
 # Create config directory
-RUN -set -eux \
+RUN set -eux \
 	&& microdnf module enable -y python39:3.9 \
 	&& microdnf install -y python39 \
 	&& pip3.9 install --no-cache-dir virtualenv \
