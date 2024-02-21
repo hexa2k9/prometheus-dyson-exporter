@@ -23,4 +23,4 @@ ENV DYSON_CREDENTIAL=""
 ENV DYSON_DEVICE_TYPE=""
 ENV DYSON_IP=""
 
-ENTRYPOINT ["/app/.venv/bin/python", "dyson-exporter"]
+ENTRYPOINT ["/app/.venv/bin/dyson-exporter"]
