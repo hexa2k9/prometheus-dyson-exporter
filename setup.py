@@ -18,7 +18,7 @@ setup(
     classifiers=[],
     python_requires='>=3',
     install_requires=[
-        'libdyson==0.8.9',
+        'libdyson-neon==1.3.0',
         'prometheus-client==0.13.1',
         'python_json_logger==2.0.2'
     ],
