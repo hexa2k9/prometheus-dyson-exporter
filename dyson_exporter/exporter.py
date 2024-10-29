@@ -32,7 +32,7 @@ class DysonMetricsCollector():
         for metric in metrics or []:
             name = metric["name"]
             value = metric["value"]
-            labels = {"instance": metric["section"]}
+            labels = {"device": metric["section"]}
 
             # Define a Gauge metric with label names
             label_names = list(labels.keys())
