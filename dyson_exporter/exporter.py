@@ -32,10 +32,16 @@ class DysonMetricsCollector():
         for metric in metrics or []:
             name = metric["name"]
             value = metric["value"]
+            labels = {"instance": metric["section"]}
 
-            metric = GaugeMetricFamily(name, name)
-            metric.add_metric(value=value, labels=name)
-            yield metric
+            # Define a Gauge metric with label names
+            label_names = list(labels.keys())
+            gauge_metric = GaugeMetricFamily(name, name, labels=label_names)
+
+            # Add metric with label values
+            gauge_metric.add_metric(list(labels.values()), value)
+
+            yield gauge_metric
 
     def get_metrics(self):
         metrics = []
