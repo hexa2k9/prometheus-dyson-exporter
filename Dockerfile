@@ -1,17 +1,18 @@
-FROM rockylinux:8-minimal
+FROM rockylinux:9-minimal
+
+ENV PYTHON_VERSION=3.12
 
 # Create config directory
 RUN set -eux \
-	&& microdnf module enable -y python39:3.9 \
-	&& microdnf install -y python39 \
-	&& pip3.9 install --no-cache-dir virtualenv \
+	&& microdnf install --nodocs -y python${PYTHON_VERSION} python${PYTHON_VERSION}-pip \
+	&& pip${PYTHON_VERSION} install --no-cache-dir virtualenv \
 	&& mkdir -p /config 
 
 # Install package
 WORKDIR /app
 COPY . .
 RUN set -eux \
-	&& virtualenv .venv \
+	&& virtualenv -p ${PYTHON_VERSION} .venv \
 	&& .venv/bin/pip --no-cache-dir install .
 
 # Set Environment Variables
