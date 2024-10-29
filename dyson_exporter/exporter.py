@@ -69,7 +69,8 @@ class DysonMetricsCollector():
                             metrics.append(
                                     {
                                         'name': attr, 
-                                        'value': val
+                                        'value': val,
+                                        'section': section
                                     }
                                 )
                     device.disconnect()
