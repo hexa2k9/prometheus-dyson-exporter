@@ -20,8 +20,8 @@ setup(
     install_requires=[
         'paho-mqtt==1.6.1',
         'libdyson-neon==1.4.1',
-        'prometheus-client==0.13.1',
-        'python_json_logger==2.0.2'
+        'prometheus-client==0.21.0',
+        'python_json_logger==2.0.7'
     ],
     entry_points={
         'console_scripts': [
