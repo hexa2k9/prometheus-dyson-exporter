@@ -1,19 +1,19 @@
-FROM rockylinux:9-minimal
+FROM python:3.12-alpine3.20 AS builder
 
-ENV PYTHON_VERSION=3.12
+ADD . /work
+WORKDIR /work
 
-# Create config directory
 RUN set -eux \
-	&& microdnf install --nodocs -y python${PYTHON_VERSION} python${PYTHON_VERSION}-pip \
-	&& pip${PYTHON_VERSION} install --no-cache-dir virtualenv \
-	&& mkdir -p /config 
+  && apk update \
+  && apk add musl-dev gcc \
+  && pip install virtualenv \
+  && virtualenv /opt/virtualenv \
+  && /opt/virtualenv/bin/pip install .
 
-# Install package
-WORKDIR /app
-COPY . .
-RUN set -eux \
-	&& virtualenv -p ${PYTHON_VERSION} .venv \
-	&& .venv/bin/pip --no-cache-dir install .
+FROM python:3.12-alpine3.20
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 # Set Environment Variables
 ENV EXPORTER_PORT="9672"
@@ -24,4 +24,12 @@ ENV DYSON_CREDENTIAL=""
 ENV DYSON_DEVICE_TYPE=""
 ENV DYSON_IP=""
 
-ENTRYPOINT ["/app/.venv/bin/dyson-exporter"]
+RUN set -eux \
+    && apk --no-cache upgrade
+
+COPY --from=builder /opt/virtualenv /opt/virtualenv
+
+EXPOSE 9672
+
+ENTRYPOINT [ "/opt/virtualenv/bin/dyson-exporter" ]
+CMD ["-h"]
