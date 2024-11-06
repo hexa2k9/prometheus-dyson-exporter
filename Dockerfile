@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.20 AS builder
+FROM python:3.13-alpine3.20 AS builder
 
 ADD . /work
 WORKDIR /work
@@ -10,7 +10,7 @@ RUN set -eux \
   && virtualenv /opt/virtualenv \
   && /opt/virtualenv/bin/pip install .
 
-FROM python:3.12-alpine3.20
+FROM python:3.13-alpine3.20
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
