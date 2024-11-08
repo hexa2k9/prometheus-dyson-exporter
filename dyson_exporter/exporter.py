@@ -48,10 +48,7 @@ class DysonMetricsCollector():
         dyson_devices = c.ConfigParser()
 
         if path.exists(self.config_path) and path.isfile(self.config_path):
-
             dyson_devices.read(self.config_path)
-
-            # TODO: Make this compile statistics for multiple devices.
             for section in dyson_devices.sections():
                 try:
                     device = ld.get_device(
@@ -60,45 +57,48 @@ class DysonMetricsCollector():
                         dyson_devices[section]["dyson_device_type"]
                     )
 
-                
                     device.connect(dyson_devices[section]["dyson_ip"])
 
-                    for attr in dir(device): 
+                    for attr in dir(device):
                         val = getattr(device, attr)
                         if not attr.startswith("_") and type(val) in [int, float, bool]:
                             metrics.append(
-                                    {
-                                        'name': attr, 
-                                        'value': val,
-                                        'section': section,
-                                        'serial': dyson_devices[section]["dyson_serial"],
-                                        'type': dyson_devices[section]["dyson_device_type"]
-                                    }
-                                )
+                                {
+                                    'name': attr,
+                                    'value': val,
+                                    'section': section,
+                                    'serial': dyson_devices[section]["dyson_serial"],
+                                    'type': dyson_devices[section]["dyson_device_type"]
+                                }
+                            )
+
                     device.disconnect()
                 except (DysonException, AttributeError) as e:
                     logger.error(f"Error when connecting to Dyson device: {e}")
                     return None
-
         else:
-
             try:
                 device = ld.get_device(
                     self.dyson_serial,
                     self.dyson_credential,
                     self.dyson_device_type
                 )
+
                 device.connect(self.dyson_ip)
 
-                for attr in dir(device): 
+                for attr in dir(device):
                     val = getattr(device, attr)
                     if not attr.startswith("_") and type(val) in [int, float, bool]:
                         metrics.append(
-                                {
-                                    'name': attr, 
-                                    'value': val
-                                }
-                            )
+                            {
+                                'name': attr,
+                                'value': val,
+                                'section': 'dyson',
+                                'serial': self.dyson_serial,
+                                'type': self.dyson_device_type
+                            }
+                        )
+
                 device.disconnect()
             except (DysonException, AttributeError) as e:
                 logger.error(f"Error when connecting to Dyson device: {e}")
@@ -144,10 +144,10 @@ def main():
     logHandler.setFormatter(formatter)
     logger.addHandler(logHandler)
     logger.setLevel(exporter_log_level)
-    
+
     # Register signal handler
     signal_handler = SignalHandler()
-    
+
     # Register our custom collector
     logger.info("Exporter is starting up")
     REGISTRY.register(DysonMetricsCollector(config_path, dyson_serial, dyson_credential, dyson_device_type, dyson_ip))
