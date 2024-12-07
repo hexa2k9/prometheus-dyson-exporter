@@ -31,4 +31,4 @@ COPY --from=builder /opt/virtualenv /opt/virtualenv
 
 EXPOSE 9672
 
-ENTRYPOINT [ "/opt/virtualenv/bin/dyson-exporter" ]
+ENTRYPOINT [ "/opt/virtualenv/bin/python", "/opt/virtualenv/bin/dyson-exporter" ]
