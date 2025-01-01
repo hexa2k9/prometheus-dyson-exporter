@@ -16,9 +16,12 @@ from pythonjsonlogger import jsonlogger
 faulthandler.enable()
 logger = logging.getLogger()
 
-class DysonMetricsCollector():
 
-    def __init__(self, config_path, dyson_serial, dyson_credential, dyson_device_type, dyson_ip):
+class DysonMetricsCollector:
+
+    def __init__(
+        self, config_path, dyson_serial, dyson_credential, dyson_device_type, dyson_ip
+    ):
         self.config_path = config_path
         self.dyson_serial = dyson_serial
         self.dyson_credential = dyson_credential
@@ -32,7 +35,11 @@ class DysonMetricsCollector():
         for metric in metrics or []:
             name = metric["name"]
             value = metric["value"]
-            labels = {"device": metric["section"], 'serial': metric["serial"], 'type': metric["type"]}
+            labels = {
+                "device": metric["section"],
+                "serial": metric["serial"],
+                "type": metric["type"],
+            }
 
             # Define a Gauge metric with label names
             label_names = list(labels.keys())
@@ -54,7 +61,7 @@ class DysonMetricsCollector():
                     device = ld.get_device(
                         dyson_devices[section]["dyson_serial"],
                         dyson_devices[section]["dyson_credential"],
-                        dyson_devices[section]["dyson_device_type"]
+                        dyson_devices[section]["dyson_device_type"],
                     )
 
                     device.connect(dyson_devices[section]["dyson_ip"])
@@ -64,11 +71,11 @@ class DysonMetricsCollector():
                         if not attr.startswith("_") and type(val) in [int, float, bool]:
                             metrics.append(
                                 {
-                                    'name': attr,
-                                    'value': val,
-                                    'section': section,
-                                    'serial': dyson_devices[section]["dyson_serial"],
-                                    'type': dyson_devices[section]["dyson_device_type"]
+                                    "name": attr,
+                                    "value": val,
+                                    "section": section,
+                                    "serial": dyson_devices[section]["dyson_serial"],
+                                    "type": dyson_devices[section]["dyson_device_type"],
                                 }
                             )
 
@@ -79,9 +86,7 @@ class DysonMetricsCollector():
         else:
             try:
                 device = ld.get_device(
-                    self.dyson_serial,
-                    self.dyson_credential,
-                    self.dyson_device_type
+                    self.dyson_serial, self.dyson_credential, self.dyson_device_type
                 )
 
                 device.connect(self.dyson_ip)
@@ -91,11 +96,11 @@ class DysonMetricsCollector():
                     if not attr.startswith("_") and type(val) in [int, float, bool]:
                         metrics.append(
                             {
-                                'name': attr,
-                                'value': val,
-                                'section': 'dyson',
-                                'serial': self.dyson_serial,
-                                'type': self.dyson_device_type
+                                "name": attr,
+                                "value": val,
+                                "section": "dyson",
+                                "serial": self.dyson_serial,
+                                "type": self.dyson_device_type,
                             }
                         )
 
@@ -106,7 +111,8 @@ class DysonMetricsCollector():
 
         return metrics
 
-class SignalHandler():
+
+class SignalHandler:
     def __init__(self):
         self.shutdownCount = 0
 
@@ -124,6 +130,7 @@ class SignalHandler():
         logger.info("Exporter is shutting down")
         self.shutdownCount += 1
 
+
 def main():
 
     # Import env vars
@@ -131,15 +138,14 @@ def main():
     exporter_port = int(os.getenv("EXPORTER_PORT"))
     config_path = str(os.getenv("CONFIG_PATH"))
     dyson_serial = str(os.getenv("DYSON_SERIAL"))
-    dyson_credential= str(os.getenv("DYSON_CREDENTIAL"))
+    dyson_credential = str(os.getenv("DYSON_CREDENTIAL"))
     dyson_device_type = str(os.getenv("DYSON_DEVICE_TYPE"))
     dyson_ip = str(os.getenv("DYSON_IP"))
 
     # Init logger
     logHandler = logging.StreamHandler()
     formatter = jsonlogger.JsonFormatter(
-        "%(asctime) %(levelname) %(message)",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        "%(asctime) %(levelname) %(message)", datefmt="%Y-%m-%d %H:%M:%S"
     )
     logHandler.setFormatter(formatter)
     logger.addHandler(logHandler)
@@ -150,13 +156,15 @@ def main():
 
     # Register our custom collector
     logger.info("Exporter is starting up")
-    REGISTRY.register(DysonMetricsCollector(config_path, dyson_serial, dyson_credential, dyson_device_type, dyson_ip))
+    REGISTRY.register(
+        DysonMetricsCollector(
+            config_path, dyson_serial, dyson_credential, dyson_device_type, dyson_ip
+        )
+    )
 
     # Start server
     start_http_server(exporter_port)
-    logger.info(
-        f"Exporter listening on port {exporter_port}"
-    )
+    logger.info(f"Exporter listening on port {exporter_port}")
 
     while not signal_handler.is_shutting_down():
         time.sleep(1)
