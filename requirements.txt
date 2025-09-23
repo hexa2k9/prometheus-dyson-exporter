@@ -1,4 +1,4 @@
 paho-mqtt==1.6.1,<2
 libdyson-neon==1.6.0
-prometheus-client==0.22.1
+prometheus-client==0.23.1
 python_json_logger==3.3.0
